@@ -1,0 +1,39 @@
+services:
+  
+  jupyter:
+    image: python:3.11-slim
+    container_name: jupyter
+    working_dir: /jupyter_workspace
+    volumes:
+      - ./jupyter_workspace:/jupyter_workspace
+    ports:
+      - "8888:8888"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - postgres
+    command: ["./start.sh"]
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: unless-stopped
+    env_file:
+      - ./postgres/.env
+    ports:
+      - "5432:5432"
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+
+  iris-api:
+    build: ./model_hosting_api
+    container_name: iris-api
+    working_dir: /app
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./model_hosting_api/.env
+    depends_on:
+      - postgres
