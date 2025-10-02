@@ -124,4 +124,8 @@ def predict():
 
 
 if __name__ == "__main__":
-    api.run(debug=True, host="0.0.0.0", port=8000)
+    api.run(
+        debug=os.getenv("DEBUG", "false").lower() in ("1", "true", "yes", "on"),
+        host=os.getenv("API_HOST", "0.0.0.0"),
+        port=int(os.getenv("API_PORT", "8000"))
+    )
